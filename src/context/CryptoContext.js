@@ -8,34 +8,25 @@ export const CryptoProvider = ({ children }) => {
   const [cryptoData, setCryptoData] = useState();
   const [searchData, setSearchData] = useState();
   const [coinSearch, setCoinSearch] = useState('');
+  const [coinData, setCoinData] = useState();
 
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState('usd');
   const [sortBy, setSortBy] = useState('market_cap_desc');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(250);
   const [perPage, setPerPage] = useState(10);
 
-  const getCoinData = async () => {
-    try {
-      const data = await fetch(`https://api.coingecko.com/api/v3/coins/list`)
-        .then((res) => res.json())
-        .then((json) => json);
-
-      // console.log(data);
-      setTotalPages(data.length);
-    } catch (error) {
-      console.log(error);
-    }
-
+  const getCoinData = async (coinId) => {
     try {
       const data = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=${sortBy}&per_page=${perPage}&ids=${coinSearch}&page=${page}&sparkline=false&price_change_percentage=1h%2C24h%2C7d&locale=en`
+        `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=true&sparkline=false
+        `
       )
         .then((res) => res.json())
         .then((json) => json);
 
       console.log(data);
-      setCryptoData(data);
+      setCoinData(data);
     } catch (error) {
       console.log(error);
     }
@@ -43,8 +34,20 @@ export const CryptoProvider = ({ children }) => {
 
   const getCryptoData = async () => {
     try {
+      const data = await fetch(`https://api.coingecko.com/api/v3/coins/list`)
+        .then((res) => res.json())
+        .then((json) => json);
+
+      // console.log(data);
+      setCryptoData();
+      setTotalPages(data.length);
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
       const data = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d&locale=en`
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=${sortBy}&per_page=${perPage}&ids=${coinSearch}&page=${page}&sparkline=false&price_change_percentage=1h%2C24h%2C7d&locale=en`
       )
         .then((res) => res.json())
         .then((json) => json);
@@ -98,6 +101,8 @@ export const CryptoProvider = ({ children }) => {
         resetFunction,
         setPerPage,
         perPage,
+        getCoinData,
+        coinData,
       }}
     >
       {children}
