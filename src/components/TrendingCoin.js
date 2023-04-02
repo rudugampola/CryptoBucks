@@ -62,7 +62,7 @@ const TrendingCoin = ({ data }) => {
         </>
       ) : (
         <div
-          className="w-full  h-full flex justify-center items-center
+          className="w-full h-full flex justify-center items-center
              "
         >
           <div
@@ -71,7 +71,7 @@ const TrendingCoin = ({ data }) => {
              "
             role="status"
           />
-          <span className="ml-2">please wait...</span>
+          <span className="ml-2">Loading...</span>
         </div>
       )}
     </div>

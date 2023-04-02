@@ -492,7 +492,7 @@ const CryptoDetails = () => {
              "
               role="status"
             />
-            <span className="ml-2">please wait...</span>
+            <span className="ml-2">Loading...</span>
           </div>
         )}
       </div>

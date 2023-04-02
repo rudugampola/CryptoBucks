@@ -1,14 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useLayoutEffect, useState } from 'react';
 
-// Create context object - wrap the components that need access to the context in the provider
+// create context object
 export const CryptoContext = createContext({});
 
-// Create a provider for components to consume and subscribe to changes
+// create the provider component
 export const CryptoProvider = ({ children }) => {
   const [cryptoData, setCryptoData] = useState();
   const [searchData, setSearchData] = useState();
-  const [coinSearch, setCoinSearch] = useState('');
   const [coinData, setCoinData] = useState();
+
+  const [coinSearch, setCoinSearch] = useState('');
 
   const [currency, setCurrency] = useState('usd');
   const [sortBy, setSortBy] = useState('market_cap_desc');
@@ -16,44 +18,60 @@ export const CryptoProvider = ({ children }) => {
   const [totalPages, setTotalPages] = useState(250);
   const [perPage, setPerPage] = useState(10);
 
-  const getCoinData = async (coinId) => {
+  // Error Handling
+  const [error, setError] = useState({ data: '', coinData: '', search: '' });
+
+  const getCryptoData = async () => {
+    setError({ ...error, data: '' });
+    setCryptoData();
+    setTotalPages(13220);
+    // try {
+    //   const data = await fetch(
+    //     `https://api.coingecko.com/api/v3/coins/list`
+    //   )
+    //     .then((res) => res.json())
+    //     .then((json) => json);
+
+    //   console.log(data);
+    //   setTotalPages(data.length);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
     try {
       const data = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=true&sparkline=false
-        `
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&ids=${coinSearch}&order=${sortBy}&per_page=${perPage}&page=${page}&sparkline=false&price_change_percentage=1h%2C24h%2C7d`
       )
-        .then((res) => res.json())
+        .then(async (res) => {
+          if (res.ok) {
+            return res.json();
+          }
+          let errorResponse = await res.json();
+          // here we might get the error so it is best to handle it and throw the error
+          // console.log(errorResponse);
+          setError({ ...error, data: errorResponse.error });
+          throw new Error(errorResponse.error);
+        })
         .then((json) => json);
 
-      console.log(data);
-      setCoinData(data);
+      // console.log(data);
+      setCryptoData(data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getCryptoData = async () => {
-    try {
-      const data = await fetch(`https://api.coingecko.com/api/v3/coins/list`)
-        .then((res) => res.json())
-        .then((json) => json);
-
-      // console.log(data);
-      setCryptoData();
-      setTotalPages(data.length);
-    } catch (error) {
-      console.log(error);
-    }
-
+  const getCoinData = async (coinid) => {
+    setCoinData();
     try {
       const data = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency.toLowerCase()}&order=${sortBy}&per_page=${perPage}&ids=${coinSearch}&page=${page}&sparkline=false&price_change_percentage=1h%2C24h%2C7d&locale=en`
+        `https://api.coingecko.com/api/v3/coins/${coinid}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=true&sparkline=false`
       )
         .then((res) => res.json())
         .then((json) => json);
 
-      console.log(data);
-      setCryptoData(data);
+      // console.log("CoinData", data);
+      setCoinData(data);
     } catch (error) {
       console.log(error);
     }
@@ -67,7 +85,7 @@ export const CryptoProvider = ({ children }) => {
         .then((res) => res.json())
         .then((json) => json);
 
-      console.log(data);
+      // console.log(data);
       setSearchData(data.coins);
     } catch (error) {
       console.log(error);
@@ -81,7 +99,7 @@ export const CryptoProvider = ({ children }) => {
 
   useLayoutEffect(() => {
     getCryptoData();
-  }, [coinSearch, currency.toLowerCase(), sortBy, page, perPage]);
+  }, [coinSearch, currency, sortBy, page, perPage]);
 
   return (
     <CryptoContext.Provider
@@ -103,6 +121,7 @@ export const CryptoProvider = ({ children }) => {
         perPage,
         getCoinData,
         coinData,
+        error,
       }}
     >
       {children}
