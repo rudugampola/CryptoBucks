@@ -2,9 +2,9 @@
 
 A tool for screening and analyzing the cryptocurrency market! This app allows you to easily track and compare various crypto assets, providing you with real-time data and powerful analytical tools.
 
-With Cryptobucks, you can:
+##With Cryptobucks, you can:
 
-..View live prices and market capitalization for hundreds of cryptocurrencies
+- View live prices and market capitalization for hundreds of cryptocurrencies
 Set custom alerts for price changes and market trends
 Analyze coin performance with detailed charts and historical data
 Compare multiple coins side by side to identify trends and opportunities
